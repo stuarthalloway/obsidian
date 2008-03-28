@@ -43,4 +43,84 @@ describe "ModelUpdateTracker" do
       delta.class_names.should == Set.new(["Fixnum", "String"])
     end
   end
+  
+  before do
+    @tracker = Obsidian::Rails::ModelUpdateTracker 
+    @tracker.reset
+  end
+  
+  it "reset clears all the deltas" do
+    @tracker.after_create("Foo")
+    @tracker.after_update("Bar")
+    @tracker.after_destroy("Quux")
+    @tracker.reset
+    @tracker.created_delta.instances.should == []
+    @tracker.updated_delta.instances.should == []
+    @tracker.destroyed_delta.instances.should == []
+  end
+  
+  describe "Data access callbacks" do
+    before do
+      @tracker = Obsidian::Rails::ModelUpdateTracker 
+      @tracker.reset
+    end
+
+    it "after_create bumps the created_delta" do
+      @tracker.after_create("Foo")
+      @tracker.created_delta.instances.should == ["Foo"]
+      @tracker.updated_delta.instances.should == []
+      @tracker.destroyed_delta.instances.should == []
+    end
+
+    it "after_update bumps the updated_delta" do
+      @tracker.after_update("Foo")
+      @tracker.created_delta.instances.should == []
+      @tracker.updated_delta.instances.should == ["Foo"]
+      @tracker.destroyed_delta.instances.should == []
+    end
+
+    it "after_destroyed bumps the destroyed_delta" do
+      @tracker.after_destroy("Foo")
+      @tracker.created_delta.instances.should == []
+      @tracker.updated_delta.instances.should == []
+      @tracker.destroyed_delta.instances.should == ["Foo"]
+    end
+  end
+
+  describe "Transaction callbacks" do
+    before do
+      @tracker = Obsidian::Rails::ModelUpdateTracker 
+      @tracker.reset
+    end
+
+    it "after_transaction_commit commits all the deltas" do
+      @tracker.after_create("Foo")
+      @tracker.after_update("Bar")
+      @tracker.after_destroy("Quux")
+      @tracker.after_transaction_commit
+      @tracker.created_delta.committed.should == ["Foo"]
+      @tracker.updated_delta.committed.should == ["Bar"]
+      @tracker.destroyed_delta.committed.should == ["Quux"]
+    end
+
+    it "after_transaction_rollback rolls back all the deltas" do
+      @tracker.after_create("Foo")
+      @tracker.after_update("Bar")
+      @tracker.after_destroy("Quux")
+      @tracker.after_transaction_rollback
+      @tracker.created_delta.instances.should == []
+      @tracker.updated_delta.instances.should == []
+      @tracker.destroyed_delta.instances.should == []
+    end
+
+    it "after_transaction_exception rolls back all the deltas" do
+      @tracker.after_create("Foo")
+      @tracker.after_update("Bar")
+      @tracker.after_destroy("Quux")
+      @tracker.after_transaction_exception
+      @tracker.created_delta.instances.should == []
+      @tracker.updated_delta.instances.should == []
+      @tracker.destroyed_delta.instances.should == []
+    end
+  end
 end
