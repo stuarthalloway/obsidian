@@ -114,6 +114,10 @@ class Test::Unit::TestCase
     assert_models_destroyed(&blk)
   end
 
+  def assert_no_models_updated(&blk)
+    assert_models_updated(&blk)
+  end
+
   def assert_models_destroyed(*models, &blk)
     Obsidian::Rails::ModelUpdateTracker.reset
     blk.call
@@ -134,30 +138,29 @@ class Test::Unit::TestCase
   
 end             
 
-# raise "Currently only works with MySQL" unless ActiveRecord::Base.configurations["#{RAILS_ENV}"]["adapter"] == "mysql"
-# module ActiveRecord
-#   module ConnectionAdapters 
-#     class MysqlAdapter   
-#       def transaction_with_model_update_tracker(*args,&blk)
-#         transaction_without_model_update_tracker(*args,&blk)
-#       rescue
-#         Obsidian::Rails::ModelUpdateTracker.after_transaction_exception
-#         raise
-#       end
-# 
-#       def rollback_db_transaction_with_model_update_tracker
-#         rollback_db_transaction_without_model_update_tracker
-#         Obsidian::Rails::ModelUpdateTracker.after_transaction_rollback
-#       end
-# 
-#       def commit_db_transaction_with_model_update_tracker
-#         commit_db_transaction_without_model_update_tracker
-#         Obsidian::Rails::ModelUpdateTracker.after_transaction_commit
-#       end
-# 
-#       alias_method_chain :transaction, :model_update_tracker
-#       alias_method_chain :rollback_db_transaction, :model_update_tracker
-#       alias_method_chain :commit_db_transaction, :model_update_tracker
-#     end
-#   end  
-# end
+module ActiveRecord
+  module ConnectionAdapters # :nodoc:
+    module DatabaseStatements
+      def transaction_with_model_update_tracker(*args,&blk)
+        transaction_without_model_update_tracker(*args,&blk)
+      rescue
+        Obsidian::Rails::ModelUpdateTracker.after_transaction_exception
+        raise
+      end
+
+      def rollback_db_transaction_with_model_update_tracker
+        rollback_db_transaction_without_model_update_tracker
+        Obsidian::Rails::ModelUpdateTracker.after_transaction_rollback
+      end
+
+      def commit_db_transaction_with_model_update_tracker
+        commit_db_transaction_without_model_update_tracker
+        Obsidian::Rails::ModelUpdateTracker.after_transaction_commit
+      end
+
+      alias_method_chain :transaction, :model_update_tracker
+      alias_method_chain :rollback_db_transaction, :model_update_tracker
+      alias_method_chain :commit_db_transaction, :model_update_tracker
+    end
+  end  
+end
