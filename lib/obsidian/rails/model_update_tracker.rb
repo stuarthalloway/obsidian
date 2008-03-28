@@ -86,19 +86,19 @@ end
 class ActiveRecord::Base
   def create_with_model_update_tracker(*args,&blk)
     result = create_without_model_update_tracker(*args,&blk)
-    Relevance::ModelUpdateTracker.after_create(self) if result
+    Obsidian::Rails::ModelUpdateTracker.after_create(self) if result
     result
   end
   alias_method_chain :create, :model_update_tracker
   def update_with_model_update_tracker(*args,&blk)
     result = update_without_model_update_tracker(*args,&blk)
-    Relevance::ModelUpdateTracker.after_update(self) if result
+    Obsidian::Rails::ModelUpdateTracker.after_update(self) if result
     result
   end
   alias_method_chain :update, :model_update_tracker
   def destroy_with_model_destroy_tracker(*args,&blk)
     result = destroy_without_model_destroy_tracker(*args,&blk)
-    Relevance::ModelUpdateTracker.after_destroy(self) if result
+    Obsidian::Rails::ModelUpdateTracker.after_destroy(self) if result
     result
   end
   alias_method_chain :destroy, :model_destroy_tracker
@@ -115,15 +115,21 @@ class Test::Unit::TestCase
   end
 
   def assert_models_destroyed(*models, &blk)
-    Relevance::ModelUpdateTracker.reset
+    Obsidian::Rails::ModelUpdateTracker.reset
     blk.call
-    assert_equal(Set.new(models.map(&:to_s)), Relevance::ModelUpdateTracker.destroyed_delta.class_names)
+    assert_equal(Set.new(models.map(&:to_s)), Obsidian::Rails::ModelUpdateTracker.destroyed_delta.class_names)
+  end
+
+  def assert_models_updated(*models, &blk)
+    Obsidian::Rails::ModelUpdateTracker.reset
+    blk.call
+    assert_equal(Set.new(models.map(&:to_s)), Obsidian::Rails::ModelUpdateTracker.updated_delta.class_names)
   end
 
   def assert_models_created(*models, &blk)
-    Relevance::ModelUpdateTracker.reset
+    Obsidian::Rails::ModelUpdateTracker.reset
     blk.call
-    assert_equal(Set.new(models.map(&:to_s)), Relevance::ModelUpdateTracker.created_delta.class_names)
+    assert_equal(Set.new(models.map(&:to_s)), Obsidian::Rails::ModelUpdateTracker.created_delta.class_names)
   end
   
 end             
@@ -135,18 +141,18 @@ end
 #       def transaction_with_model_update_tracker(*args,&blk)
 #         transaction_without_model_update_tracker(*args,&blk)
 #       rescue
-#         Relevance::ModelUpdateTracker.after_transaction_exception
+#         Obsidian::Rails::ModelUpdateTracker.after_transaction_exception
 #         raise
 #       end
 # 
 #       def rollback_db_transaction_with_model_update_tracker
 #         rollback_db_transaction_without_model_update_tracker
-#         Relevance::ModelUpdateTracker.after_transaction_rollback
+#         Obsidian::Rails::ModelUpdateTracker.after_transaction_rollback
 #       end
 # 
 #       def commit_db_transaction_with_model_update_tracker
 #         commit_db_transaction_without_model_update_tracker
-#         Relevance::ModelUpdateTracker.after_transaction_commit
+#         Obsidian::Rails::ModelUpdateTracker.after_transaction_commit
 #       end
 # 
 #       alias_method_chain :transaction, :model_update_tracker
