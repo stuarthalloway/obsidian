@@ -1,0 +1,23 @@
+development:
+  adapter: mysql
+  encoding: utf8
+  database: ors_development
+  username: root
+  password:
+  socket: 
+
+test:
+  adapter: mysql
+  encoding: utf8
+  database: ors_test
+  username: root
+  password:
+  socket: 
+
+production:
+  adapter: mysql
+  encoding: utf8
+  database: ors_production
+  username: root
+  password: 
+  socket: 
