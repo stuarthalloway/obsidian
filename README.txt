@@ -1,4 +1,4 @@
-= obsidian
+= Obsidian
 
 http://opensource.thinkrelevance.com
 
@@ -9,15 +9,46 @@ Chunks of Ruby code we have found helpful.
 
 == FEATURES/PROBLEMS:
 
+=== Model Update Tracker
+This library allows you to functionally test updates to models with clearer and more focused intent.
+It forces you to have a better understanding of how your Objects interact and let's you demonstrate 
+that knowledge by putting it in your tests.  For example instead of writing a test like so
 
-== SYNOPSIS:
+assert_difference Asset :count do
+  post :create, :asset => {}
+end
 
+you would write your test like so
 
-== REQUIREMENTS:
+assert_models_created(Asset) do
+  post :create, :asset => {}
+end
 
+Now if an asset really created multiple other objects such as an asset owner and a location the above
+test would fail stating that it expected more to happen.  This is where you excercise your deep domain
+knowledge muscles and make your new obsidian powered test pass.
+
+assert_models_saved(Asset, AssetOwner, Location) do
+  post: create, :asset => {}
+end
+
+You have just done youself a great service.  If for some reason you change code that affects your 
+object model and things fall out of place this test will catch that regression error where the original
+assert_difference may not.  There are also a whole host of other methods you can use with model update
+tracker that provide functionality for updates, deletes, and no_difference assertions.
+
+* assert_models_created(models)
+* assert_models_updated(models)
+* assert_models_destroyed(models)
+* assert_no_models_created
+* assert_no_models_destroyed
+* assert_no_models_updated
 
 == INSTALL:
 
+git clone git://github.com/stuarthalloway/obsidian.git
+rake gem
+sudo gem install pkg/#{pkg_name}
 
 == LICENSE:
 
