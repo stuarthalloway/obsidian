@@ -3,4 +3,7 @@ Manifest.txt
 README.txt
 Rakefile
 lib/obsidian.rb
-test/test_obsidian.rb
+lib/obsidian/rails/model_update_tracker.rb
+test/obsidian_test.rb
+test/test_helper.rb
+test/obsidian/rails/model_update_tracker.rb
