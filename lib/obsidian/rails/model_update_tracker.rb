@@ -9,23 +9,29 @@ module Obsidian::Rails
       def initialize
         reset
       end
+
       def reset
         @committed = []
         @uncommitted = []
       end
+
       def << (obj)
         @uncommitted << obj
       end
+
       def transaction_committed
         @committed = @committed + @uncommitted
         @uncommitted = []
       end
+
       def transaction_rolled_back
         @uncommitted = []
       end
+
       def instances
         @committed + @uncommitted
       end
+
       def class_names
         set = instances.inject(Set.new) do |set,inst|
           set << inst.class.to_s
@@ -41,36 +47,43 @@ module Obsidian::Rails
         destroyed_delta.reset
         updated_delta.reset
       end    
+
       def after_create(model)         
         log("Model create #{model} is a #{model.class}")
         created_delta << model
       end
+
       def after_update(model)         
         log("Model update #{model}")
         updated_delta << model
       end
+
       def after_destroy(model)
         log("Model destroy #{model}")
         destroyed_delta << model
       end
+
       def after_transaction_commit
         log("Commit transaction")
         created_delta.transaction_committed
         updated_delta.transaction_committed
         destroyed_delta.transaction_committed
       end
+
       def after_transaction_rollback
         log("Rollback of transaction}")
         created_delta.transaction_rolled_back
         updated_delta.transaction_rolled_back
         destroyed_delta.transaction_rolled_back
       end             
+
       def after_transaction_exception
         log("Exception in transaction}")
         created_delta.transaction_rolled_back
         updated_delta.transaction_rolled_back
         destroyed_delta.transaction_rolled_back
       end             
+
       def log(msg)
         # puts msg 
       end
@@ -89,20 +102,24 @@ class ActiveRecord::Base
     Obsidian::Rails::ModelUpdateTracker.after_create(self) if result
     result
   end
+
   alias_method_chain :create, :model_update_tracker
+
   def update_with_model_update_tracker(*args,&blk)
     result = update_without_model_update_tracker(*args,&blk)
     Obsidian::Rails::ModelUpdateTracker.after_update(self) if result
     result
   end
+
   alias_method_chain :update, :model_update_tracker
+
   def destroy_with_model_destroy_tracker(*args,&blk)
     result = destroy_without_model_destroy_tracker(*args,&blk)
     Obsidian::Rails::ModelUpdateTracker.after_destroy(self) if result
     result
   end
+
   alias_method_chain :destroy, :model_destroy_tracker
- 
 end
 
 class Test::Unit::TestCase       
@@ -135,7 +152,6 @@ class Test::Unit::TestCase
     blk.call
     assert_equal(Set.new(models.map(&:to_s)), Obsidian::Rails::ModelUpdateTracker.created_delta.class_names)
   end
-  
 end             
 
 module ActiveRecord

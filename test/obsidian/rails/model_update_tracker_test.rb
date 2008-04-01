@@ -3,6 +3,10 @@ require 'obsidian/rails/model_update_tracker'
 include Obsidian::Rails::ModelUpdateTracker
 
 describe "ModelUpdateTracker" do
+  describe "Runtime" do
+    xit "Raises an error if anything but test environment is running" 
+  end
+
   describe "Delta" do
     it "adds uncommitted objects with <<" do
       delta = Delta.new
