@@ -1,6 +1,4 @@
-=== 1.0.0 / 2008-03-28
-
-* 1 major enhancement
-
-  * Birthday!
+2008-03-28
+  * Added model_update_tracker
+  * Added example rails applicaion in branch example
 

@@ -1,15 +1,7 @@
-# -*- ruby -*-
-
 require 'rubygems'
-# require 'hoe'
 require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
-
-# Hoe.new('obsidian', Obsidian::VERSION) do |p|
-  # p.rubyforge_name = 'obsidianx' # if different than lowercase project name
-#   p.developer('Stuart Halloway', 'stu@thinkrelevance.com')
-# end
 
 desc 'Default: run unit tests.'
 task :default => :test
@@ -35,7 +27,7 @@ begin
   
     Rcov::RcovTask.new(:unit => :clean) do |t|
       t.test_files = FileList['test/**/*_test.rb']
-      t.rcov_opts = ["--sort coverage", "--aggregate 'rcov_tmp'", "--html", "--rails", "--exclude '#{rcov_exclusions}'"]
+      t.rcov_opts = ["--sort coverage", "--aggregate 'rcov_tmp'", "--html", "--rails", "--exclude '/Library'"]
       t.output_dir = rcov_output + '/unit'
     end
   
