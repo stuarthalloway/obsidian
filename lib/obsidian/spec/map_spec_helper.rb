@@ -16,10 +16,13 @@ module Obsidian
         when 1 then  test("to", args.first, &blk)
         else raise ArgumentError, "wrong number of arguments (#{args.size} for 0-1)"
         end
-      end    
-      # for be.in
-      def set(*other, &blk)
-        test("set", *other, &blk)
+      end   
+      # for map.to.values.in 
+      def values
+        self
+      end
+      def in(*other, &blk)
+        test("in", *other, &blk)
       end
       def test(method, *other, &blk)
         other = args_to_set(*other)
