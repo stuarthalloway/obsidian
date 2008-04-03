@@ -1,4 +1,4 @@
-require 'test/spec'
+require 'obsidian/spec'
 require 'set'
 
 def Set(*args)
@@ -8,22 +8,22 @@ end
 module Obsidian
   module Spec 
     class SubsetMatcher
-      include Test::Unit::Assertions
-      def initialize(object)
+      include Obsidian::Spec
+      def initialize(object) 
         @object = object.to_set
-      end           
+      end  
       def of(*other)
-        other = other.size == 1 ? other[0].to_set : other.to_set
+        other = args_to_set(*other)
         assert(@object.proper_subset?(other) || @object==other, "Expected #{@object.inspect} to be a subset of #{other.inspect}")
       end
     end
     class SupersetMatcher
-      include Test::Unit::Assertions
+      include Obsidian::Spec
       def initialize(object)
         @object = object.to_set
       end           
       def of(*other)
-        other = other.size == 1 ? other[0].to_set : other.to_set
+        other = args_to_set(*other)
         assert(@object.proper_superset?(other) || @object==other, "Expected #{@object.inspect} to be a superset of #{other.inspect}")
       end
     end
