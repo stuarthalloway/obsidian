@@ -5,7 +5,9 @@ http://opensource.thinkrelevance.com
 == DESCRIPTION:
 
 Obsidian. It's metastable. 
-Chunks of Ruby code we have found helpful.
+Obsidian contains chunks of Ruby code we have found helpful.
+Think of it as Relevance's grab bag of useful snippets and micro-libraries, released to 
+make the Ruby community a better place.
 
 == FEATURES
 
