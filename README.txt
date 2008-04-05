@@ -7,7 +7,7 @@ http://opensource.thinkrelevance.com
 Obsidian. It's metastable. 
 Chunks of Ruby code we have found helpful.
 
-== FEATURES/PROBLEMS:
+== FEATURES
 
 === Model Update Tracker
 This library allows you to functionally test updates to models with clearer and more focused intent.
