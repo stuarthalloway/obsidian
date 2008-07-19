@@ -40,6 +40,6 @@ rescue LoadError
   if RUBY_PLATFORM =~ /java/
     puts 'running in jruby - rcov tasks not available'
   else
-    puts 'sudo gem install rcov # if you want the rcov tasks'
+    puts 'sudo gem install rcov # if you want the coverage tasks'
   end
 end
